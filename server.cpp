@@ -29,6 +29,8 @@ int main() {
         cout<<"Listen failed\n";
         return 1;
     }
+    cout<<"Server is listening on port 8080...\n";
+    
     //puts the server into a state where its ready to receive connection requests
     //5 is the backlog (How many incoming connection requests can wait in the queue while our server is busy handling another connection)
 
