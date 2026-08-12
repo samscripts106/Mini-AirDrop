@@ -23,7 +23,14 @@ int main() {
         return 1;
     } //binds the socket to a specific IP no. & port
 
-    cout << "Server bound to port 8080\n";
+    listen(serverSocket, 5); //puts the server into a state where its ready to receive connection requests
+    //5 is the backlog (How many incoming connection requests can wait in the queue while our server is busy handling another connection)
 
+    if (listen(serverSocket, 5) == -1){
+        cout<<"Listen failed\n";
+        return 1;
+    }
+
+    
     return 0;
 }
