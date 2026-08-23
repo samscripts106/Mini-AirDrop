@@ -17,11 +17,20 @@
    <widget class="QPushButton" name="browseButton">
     <property name="geometry">
      <rect>
-      <x>370</x>
-      <y>170</y>
-      <width>100</width>
-      <height>32</height>
+      <x>310</x>
+      <y>120</y>
+      <width>191</width>
+      <height>41</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Arial Unicode MS</family>
+      <pointsize>16</pointsize>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>ArrowCursor</cursorShape>
     </property>
     <property name="text">
      <string>Browse File</string>
@@ -30,40 +39,127 @@
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>380</x>
-      <y>50</y>
-      <width>71</width>
-      <height>31</height>
+      <x>240</x>
+      <y>40</y>
+      <width>321</width>
+      <height>60</height>
      </rect>
     </property>
+    <property name="minimumSize">
+     <size>
+      <width>150</width>
+      <height>60</height>
+     </size>
+    </property>
+    <property name="font">
+     <font>
+      <family>Rockwell</family>
+      <pointsize>24</pointsize>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="layoutDirection">
+     <enum>Qt::LayoutDirection::LeftToRight</enum>
+    </property>
     <property name="text">
-     <string>Mini Airdrop</string>
+     <string>Mini Airdrop </string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignCenter</set>
     </property>
    </widget>
    <widget class="QLabel" name="fileLabel">
     <property name="geometry">
      <rect>
-      <x>370</x>
-      <y>220</y>
-      <width>321</width>
+      <x>240</x>
+      <y>180</y>
+      <width>331</width>
       <height>20</height>
      </rect>
     </property>
+    <property name="layoutDirection">
+     <enum>Qt::LayoutDirection::LeftToRight</enum>
+    </property>
     <property name="text">
      <string>No file selected</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignCenter</set>
     </property>
    </widget>
    <widget class="QPushButton" name="sendButton">
     <property name="geometry">
      <rect>
-      <x>370</x>
-      <y>300</y>
-      <width>100</width>
-      <height>32</height>
+      <x>520</x>
+      <y>280</y>
+      <width>211</width>
+      <height>41</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>16</pointsize>
+     </font>
     </property>
     <property name="text">
      <string>Send File</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="receivedButton">
+    <property name="geometry">
+     <rect>
+      <x>520</x>
+      <y>360</y>
+      <width>211</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Open received files</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="discoverButton">
+    <property name="geometry">
+     <rect>
+      <x>80</x>
+      <y>250</y>
+      <width>191</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>16</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Find nearby devices </string>
+    </property>
+   </widget>
+   <widget class="QListWidget" name="deviceList">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>330</y>
+      <width>256</width>
+      <height>192</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>80</x>
+      <y>300</y>
+      <width>191</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Nearby devices:</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignCenter</set>
     </property>
    </widget>
   </widget>

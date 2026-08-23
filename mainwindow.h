@@ -5,6 +5,11 @@
 #include <QByteArray>
 #include <QFile>
 #include <QString>
+#include <QUdpSocket>
+#include <QHostAddress>
+#include <QList>
+#include <QTimer>
+#include <QListWidgetItem>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -38,10 +43,23 @@ private:
     QString receivedFileName;
     QFile *receivedFile = nullptr;
 
+    QUdpSocket *udpSocket;
+    QTimer *discoveryTimer;
+    bool discoveryActive = false;
+    QString selectedDeviceIp;
+    QString connectedDeviceIp;
+    bool outgoingConnection = false;
+
+    void discoverDevices();
+    void processDiscoveryResponse();
+    void finishDiscovery();
+
 private slots:
     void browseFile();
     void sendFile();
     void checkForClient();
+    void openReceivedFolder();
+    void deviceSelected(QListWidgetItem *item);
 };
 
 #endif

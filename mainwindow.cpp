@@ -4,7 +4,6 @@
 #include <QFileInfo>
 #include <QTimer>
 #include <QFile>
-#include <QDir>
 #include <QByteArray>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -13,6 +12,11 @@
 #include <fcntl.h>
 #include <cstring>
 #include <QDir>
+#include <QDesktopServices>
+#include <QUrl>
+#include <QListWidgetItem>
+#include <arpa/inet.h>
+#include <QStringList>
 
 void MainWindow::browseFile()
 {
@@ -39,15 +43,29 @@ void MainWindow::sendFile()
         return;
     }
 
+    if (selectedDeviceIp.isEmpty()) {
+        ui->fileLabel->setText("Please select a device first.");
+        return;
+    }
+
     if (clientSocket == -1) {
-        ui->fileLabel->setText("No client connected.");
+        ui->fileLabel->setText("No phone connected.");
+        return;
+    }
+
+    if (selectedDeviceIp != connectedDeviceIp) {
+        ui->fileLabel->setText(
+            "Selected device is not connected."
+            );
         return;
     }
 
     bool success = sendSelectedFile();
 
     if (success) {
-        ui->fileLabel->setText("File sent successfully!");
+        ui->fileLabel->setText(
+            "File sent successfully!"
+            );
     }
 }
 
@@ -56,7 +74,8 @@ bool MainWindow::sendAll(int socket, const char* data, long long totalBytes)
     long long totalSent = 0;
 
     while (totalSent < totalBytes) {
-        int bytesSent = send(
+
+        ssize_t bytesSent = send(
             socket,
             data + totalSent,
             totalBytes - totalSent,
@@ -148,29 +167,48 @@ bool MainWindow::sendSelectedFile()
 
 void MainWindow::checkForClient()
 {
-    if (clientSocket == -1) {
-        sockaddr_in clientAddress{};
-        socklen_t clientLength = sizeof(clientAddress);
+    sockaddr_in clientAddress{};
+    socklen_t clientLength = sizeof(clientAddress);
 
-        int newSocket = accept(
-            serverSocket,
-            (struct sockaddr*)&clientAddress,
-            &clientLength
+    int newSocket = accept(
+        serverSocket,
+        reinterpret_cast<sockaddr*>(&clientAddress),
+        &clientLength
+        );
+
+    if (newSocket != -1) {
+
+        if (clientSocket != -1)
+            ::close(clientSocket);
+
+        clientSocket = newSocket;
+
+        char clientIp[INET_ADDRSTRLEN];
+
+        inet_ntop(
+            AF_INET,
+            &clientAddress.sin_addr,
+            clientIp,
+            INET_ADDRSTRLEN
             );
 
-        if (newSocket != -1) {
-            clientSocket = newSocket;
-            fcntl(clientSocket, F_SETFL, O_NONBLOCK);
+        connectedDeviceIp =
+            QString::fromUtf8(clientIp);
 
-            ui->fileLabel->setText(
-                "Client connected."
-                );
-        }
+        outgoingConnection = false;
 
-        return;
+        qDebug() << "PHONE CONNECTED:"
+                 << connectedDeviceIp;
+
+        ui->fileLabel->setText(
+            "Phone connected. Ready to receive."
+            );
     }
 
-    receiveFile();
+    if (clientSocket != -1 &&
+        !outgoingConnection) {
+        receiveFile();
+    }
 }
 
 void MainWindow::receiveFile()
@@ -187,9 +225,7 @@ void MainWindow::receiveFile()
             );
 
         if (bytesReceived == 0) {
-            ::close(clientSocket);
-            clientSocket = -1;
-            return;
+            break;
         }
 
         if (bytesReceived < 0) {
@@ -348,17 +384,287 @@ void MainWindow::receiveFile()
     }
 }
 
+void MainWindow::openReceivedFolder()
+{
+    QString receivedFolder =
+        "/Users/samscript06/MiniAirDrop/ReceivedFromPhone";
+
+    QDir().mkpath(receivedFolder);
+
+    QDesktopServices::openUrl(
+        QUrl::fromLocalFile(receivedFolder)
+        );
+}
+
+void MainWindow::processDiscoveryResponse()
+{
+    while (udpSocket->hasPendingDatagrams()) {
+
+        QByteArray datagram;
+
+        datagram.resize(
+            static_cast<int>(
+                udpSocket->pendingDatagramSize()
+                )
+            );
+
+        QHostAddress senderAddress;
+        quint16 senderPort;
+
+        udpSocket->readDatagram(
+            datagram.data(),
+            datagram.size(),
+            &senderAddress,
+            &senderPort
+            );
+
+        QString response =
+            QString::fromUtf8(datagram).trimmed();
+
+        if (!discoveryActive)
+            continue;
+
+        QStringList parts =
+            response.split("|");
+
+        if (parts.size() < 3)
+            continue;
+
+        QString deviceName = parts[0];
+        QString deviceMode = parts[1];
+        QString phonePort = parts[2];
+
+        QString ipAddress =
+            senderAddress.toString();
+
+        if (ipAddress.startsWith("::ffff:"))
+            ipAddress = ipAddress.mid(7);
+
+        QString deviceInfo =
+            deviceName +
+            " [" +
+            deviceMode +
+            "] (" +
+            ipAddress +
+            ")";
+
+        if (ui->deviceList->findItems(
+                              deviceInfo,
+                              Qt::MatchExactly
+                              ).isEmpty()) {
+
+            QListWidgetItem *item =
+                new QListWidgetItem(deviceInfo);
+
+            item->setData(
+                Qt::UserRole,
+                ipAddress
+                );
+
+            item->setData(
+                Qt::UserRole + 1,
+                deviceMode
+                );
+
+            item->setData(
+                Qt::UserRole + 2,
+                phonePort
+                );
+
+            ui->deviceList->addItem(item);
+        }
+    }
+}
+
+void MainWindow::finishDiscovery()
+{
+    discoveryActive = false;
+
+    if (ui->deviceList->count() == 0) {
+        ui->fileLabel->setText(
+            "No nearby devices found."
+            );
+    }
+    else {
+        ui->fileLabel->setText(
+            QString::number(
+                ui->deviceList->count()
+                ) +
+            " device(s) found."
+            );
+    }
+}
+
+void MainWindow::deviceSelected(QListWidgetItem *item)
+{
+    if (!item)
+        return;
+
+    selectedDeviceIp =
+        item->data(Qt::UserRole).toString();
+
+    QString deviceMode =
+        item->data(Qt::UserRole + 1).toString();
+
+    QString phonePort =
+        item->data(Qt::UserRole + 2).toString();
+
+    qDebug() << "Selected IP:" << selectedDeviceIp;
+    qDebug() << "Device mode:" << deviceMode;
+    qDebug() << "Phone port:" << phonePort;
+
+    if (deviceMode != "RECEIVE") {
+
+        ui->fileLabel->setText(
+            "Selected: " +
+            selectedDeviceIp +
+            " [" +
+            deviceMode +
+            "]"
+            );
+
+        return;
+    }
+
+    int phonePortNumber =
+        phonePort.toInt();
+
+    int newSocket =
+        socket(
+            AF_INET,
+            SOCK_STREAM,
+            0
+            );
+
+    if (newSocket == -1) {
+
+        ui->fileLabel->setText(
+            "Failed to create connection."
+            );
+
+        return;
+    }
+
+    sockaddr_in phoneAddress{};
+
+    phoneAddress.sin_family =
+        AF_INET;
+
+    phoneAddress.sin_port =
+        htons(phonePortNumber);
+
+    if (inet_pton(
+            AF_INET,
+            selectedDeviceIp.toStdString().c_str(),
+            &phoneAddress.sin_addr
+            ) <= 0) {
+
+        ui->fileLabel->setText(
+            "Invalid phone IP."
+            );
+
+        ::close(newSocket);
+        return;
+    }
+
+    ui->fileLabel->setText(
+        "Connecting to phone..."
+        );
+
+    if (::connect(
+            newSocket,
+            reinterpret_cast<sockaddr*>(&phoneAddress),
+            sizeof(phoneAddress)
+            ) == -1) {
+
+        ui->fileLabel->setText(
+            "Could not connect to phone."
+            );
+
+        qDebug()
+            << "Connection failed:"
+            << strerror(errno);
+
+        ::close(newSocket);
+        return;
+    }
+
+    if (clientSocket != -1)
+        ::close(clientSocket);
+
+    clientSocket = newSocket;
+
+    connectedDeviceIp =
+        selectedDeviceIp;
+
+    outgoingConnection = true;
+
+    ui->fileLabel->setText(
+        "Phone connected. Ready to send."
+        );
+
+    qDebug()
+        << "Connected to phone:"
+        << selectedDeviceIp;
+}
+
+void MainWindow::discoverDevices()
+{
+    ui->deviceList->clear();
+    ui->fileLabel->setText("Searching for nearby devices...");
+
+    discoveryActive = true;
+
+    QByteArray message =
+        "MINI_AIRDROP_DISCOVERY";
+
+    udpSocket->writeDatagram(
+        message,
+        QHostAddress::Broadcast,
+        45454
+        );
+
+    discoveryTimer->start(2000);
+}
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 
+    udpSocket = new QUdpSocket(this);
+
+    udpSocket->bind(
+        QHostAddress::AnyIPv4,
+        45454,
+        QUdpSocket::ShareAddress |
+            QUdpSocket::ReuseAddressHint
+        );
+
+    discoveryTimer = new QTimer(this);
+    discoveryTimer->setSingleShot(true);
+
     connect(ui->browseButton, &QPushButton::clicked,
             this, &MainWindow::browseFile);
 
     connect(ui->sendButton, &QPushButton::clicked,
             this, &MainWindow::sendFile);
+
+    connect(ui->receivedButton, &QPushButton::clicked,
+            this, &MainWindow::openReceivedFolder);
+
+    connect(ui->discoverButton, &QPushButton::clicked,
+            this, &MainWindow::discoverDevices);
+
+    connect(udpSocket, &QUdpSocket::readyRead,
+            this, &MainWindow::processDiscoveryResponse);
+
+    connect(discoveryTimer, &QTimer::timeout,
+            this, &MainWindow::finishDiscovery);
+
+    connect(ui->deviceList, &QListWidget::itemClicked,
+            this, &MainWindow::deviceSelected);
 
     serverSocket = socket(AF_INET, SOCK_STREAM, 0);
     if (serverSocket == -1) {
