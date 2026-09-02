@@ -75,6 +75,57 @@ Currently tested between:
 
 Both devices must be connected to the **same local network or hotspot**.
 
+## 📱 Android Setup (Termux)
+
+The Android client is implemented in **C++** and runs inside **Termux**.
+
+### 1. Install Required Packages
+
+```bash
+pkg update && pkg upgrade
+pkg install clang
+```
+
+### 2. Enable Storage Access
+
+```bash
+termux-setup-storage
+```
+
+Grant Termux storage permission when prompted.
+
+### 3. Clone the Repository
+
+```bash
+git clone https://github.com/samscripts106/Mini-AirDrop.git
+cd Mini-AirDrop/Android
+```
+
+### 4. Compile the Android Client
+
+```bash
+clang++ mini_airdrop.cpp -o mini_airdrop
+```
+
+### 5. Run MiniAirDrop
+
+```bash
+./mini_airdrop
+```
+
+The Android client provides two options:
+
+```text
+1. Send File
+2. Receive File
+```
+
+Files received from the Mac are saved to:
+
+```text
+~/storage/shared/MiniAirDrop/ReceivedFromMac
+```
+
 ## 🚀 How It Works
 
 ### 📤 Send from Android → Mac
