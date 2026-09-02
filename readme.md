@@ -1,9 +1,10 @@
 # MiniAirDrop 🚀
 
-A lightweight **cross-device file transfer application** built with **C++** that allows files to be transferred between a **Mac and an Android device** over the same local network.
+A lightweight **cross-device file transfer application** built with **C++**, featuring a **Qt-based GUI on macOS** and a **Termux-based client on Android**, enabling direct file transfers over the same local network.
 
-Inspired by Apple's AirDrop, this project focuses on understanding the fundamentals of **computer networking, socket programming, and file transfer protocols**.
+MiniAirDrop combines UDP-based device discovery with TCP-based file transfer, allowing devices to locate each other and exchange files reliably without relying on cloud storage, third-party servers, or an active internet connection. The project is designed to explore the fundamentals behind modern file-sharing systems, including computer networking, socket programming, device discovery, and file transfer protocols.
 
+Qt GUI:
 <p align="center">
   <img src="https://github.com/user-attachments/assets/0c1cea2e-19cb-40ce-b7de-3690f880bc4b" width="700" alt="MiniAirDrop Qt GUI">
 </p>
@@ -106,23 +107,7 @@ Both devices must be connected to the **same local network or hotspot**.
   <img src="https://github.com/user-attachments/assets/12edde92-abcf-4205-a8df-e33085b88dcb" width="500" alt="Android receiving mode">
 </p>
 
-
-
 No cloud storage or third-party server is required.
-
-## 🧠 Networking Concepts Used
-
-This project helped explore:
-
-* TCP/IP networking
-* Client-server architecture
-* Socket programming
-* UDP broadcasting
-* Device discovery
-* File transfer protocols
-* Byte streams and packet handling
-* Reliable data transmission
-* Local network communication
 
 ## ⚠️ Current Limitations
 
