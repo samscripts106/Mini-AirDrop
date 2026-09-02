@@ -96,17 +96,17 @@ Both devices must be connected to the **same local network or hotspot**.
 2. Select **Receive File** to start the Android receiving service.
 3. Open MiniAirDrop on the Mac.
 4. Use **Device Discovery** to find the Android device on the local network.
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/56085743-f82e-4088-b0d7-7a5f2fee91e3" width="700" alt="Mac device discovery and file transfer">
+</p>
 5. Select the discovered Android device.
 6. Choose a file on the Mac and click **Send**.
 7. The file is transferred directly to the Android device.
-
 <p align="center">
   <img src="https://github.com/user-attachments/assets/12edde92-abcf-4205-a8df-e33085b88dcb" width="500" alt="Android receiving mode">
 </p>
 
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/56085743-f82e-4088-b0d7-7a5f2fee91e3" width="700" alt="Mac device discovery and file transfer">
-</p>
+
 
 No cloud storage or third-party server is required.
 
