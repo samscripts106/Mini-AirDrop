@@ -2,7 +2,7 @@
 
 A lightweight **cross-device file transfer application** built with **C++** that allows files to be transferred between a **Mac and an Android device** over the same local network.
 
-The project was inspired by Apple's AirDrop and focuses on understanding the fundamentals of **computer networking, socket programming, and file transfer protocols**.
+Inspired by Apple's AirDrop, this project focuses on understanding the fundamentals of **computer networking, socket programming, and file transfer protocols**.
 
 ## ✨ Features
 
@@ -21,22 +21,18 @@ MiniAirDrop uses two networking protocols:
 
 UDP broadcasts are used to discover devices available on the local network.
 
-```text
+```text id="u0ecrb"
 Mac  ───── UDP Broadcast ─────► Android
 Mac  ◄──── Device Response ──── Android
 ```
 
-The discovery service uses port:
-
-```text
-45454
-```
+The discovery service runs on port `45454`.
 
 ### TCP — File Transfer
 
 Once a device is selected, files are transferred using TCP for reliable delivery.
 
-```text
+```text id="r1bsib"
 Sender
    │
    │  Filename Size
@@ -47,7 +43,7 @@ Sender
 Receiver
 ```
 
-Ports used:
+### Ports Used
 
 | Device  |  Port | Purpose              |
 | ------- | ----: | -------------------- |
@@ -69,8 +65,8 @@ Ports used:
 
 Currently tested between:
 
-* macOS 🍎 (using Qt GUI)
-* Android 📱 (using Termux)
+* 🍎 **macOS** — Qt GUI
+* 📱 **Android** — Termux
 
 Both devices must be connected to the **same local network or hotspot**.
 
@@ -80,14 +76,15 @@ Both devices must be connected to the **same local network or hotspot**.
 
 1. Start the MiniAirDrop application on the Mac.
 2. Open the MiniAirDrop client in Termux on Android.
-3. Enter the Mac's IP address when prompted.
-4. Select **Send File** from the Android client.
+3. Enter the Mac's local IP address when prompted.
+4. Select **Send File**.
 5. Enter the path of the file you want to send.
 6. The Android device connects to the Mac over TCP.
 7. The selected file is transferred and saved on the Mac.
-   
-   <img width="1080" height="940" alt="image" src="https://github.com/user-attachments/assets/8fa5f3bf-2a4c-4f36-bf31-269cfbea5e37" />
 
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/8fa5f3bf-2a4c-4f36-bf31-269cfbea5e37" width="500" alt="Sending a file from Android to Mac">
+</p>
 
 ### 📥 Receive on Android from Mac
 
@@ -98,9 +95,14 @@ Both devices must be connected to the **same local network or hotspot**.
 5. Select the discovered Android device.
 6. Choose a file on the Mac and click **Send**.
 7. The file is transferred directly to the Android device.
-   
-<img width="1080" height="949" alt="image" src="https://github.com/user-attachments/assets/12edde92-abcf-4205-a8df-e33085b88dcb" />
-<img width="1600" height="1125" alt="image" src="https://github.com/user-attachments/assets/56085743-f82e-4088-b0d7-7a5f2fee91e3" />
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/12edde92-abcf-4205-a8df-e33085b88dcb" width="500" alt="Android receiving mode">
+</p>
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/56085743-f82e-4088-b0d7-7a5f2fee91e3" width="700" alt="Mac device discovery and file transfer">
+</p>
 
 No cloud storage or third-party server is required.
 
@@ -118,7 +120,6 @@ This project helped explore:
 * Reliable data transmission
 * Local network communication
 
-## ⚠️ Current limitations:
+## ⚠️ Current Limitations
 
-The current version uses a **Termux-based client on Android**, so there isn't a native mobile GUI yet. The project is also currently designed and tested for **macOS ↔ Android transfers**, with laptop-to-laptop support still being a future improvement.
-
+The current version uses a **Termux-based client on Android**, so there isn't a native mobile GUI yet. The project is currently designed and tested for **macOS ↔ Android transfers**, with laptop-to-laptop support planned as a future improvement.
