@@ -5,7 +5,7 @@ A lightweight **cross-device file transfer application** built with **C++** that
 Inspired by Apple's AirDrop, this project focuses on understanding the fundamentals of **computer networking, socket programming, and file transfer protocols**.
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/0c1cea2e-19cb-40ce-b7de-3690f880bc4b" width="450" alt="MiniAirDrop Qt GUI">
+  <img src="https://github.com/user-attachments/assets/0c1cea2e-19cb-40ce-b7de-3690f880bc4b" width="700" alt="MiniAirDrop Qt GUI">
 </p>
 
 ## ✨ Features
