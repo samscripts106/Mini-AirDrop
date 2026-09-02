@@ -4,6 +4,9 @@ A lightweight **cross-device file transfer application** built with **C++** that
 
 Inspired by Apple's AirDrop, this project focuses on understanding the fundamentals of **computer networking, socket programming, and file transfer protocols**.
 
+Qt GUI:
+<img width="900" height="1196" alt="image" src="https://github.com/user-attachments/assets/0c1cea2e-19cb-40ce-b7de-3690f880bc4b" />
+
 ## ✨ Features
 
 * 📤 Send files between Mac and Android
